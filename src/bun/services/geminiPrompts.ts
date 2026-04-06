@@ -10,6 +10,7 @@ Objective: Synchronize the attached audio (MP3 in this app) with the provided sc
 Constraints:
 
 Paragraph-Based Mapping: You must create exactly one JSON object per Paragraph number (Paragraph 1, Paragraph 2, etc.). Identify the exact start and end times for each specific paragraph based on the audio narration.
+Pre-Labeled Input Handling: The provided script may already be pre-formatted with labels like "Paragraph 1", "Paragraph 2", etc. Preserve this paragraph grouping order exactly, and do not merge, split, rename, or renumber paragraphs.
 Full Duration Sync: Map the text across the entire duration of the audio file (e.g., if the file is 7:11, the final segment's end time must reach 7:11).
 Timestamping: Identify the start and end times for each paragraph/segment based on the audio narration.
 Pause Detection: Note every silence longer than 1.0 second as a structural break and document its duration in the "pause" field (e.g. "1.2s"). Shorter silences may use "0.0s" where appropriate.

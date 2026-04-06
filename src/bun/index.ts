@@ -22,6 +22,7 @@ import type {
   SetFileFromBytesResult,
 } from "../shared/rpcTypes";
 import type { AnalysisSegment } from "../shared/schema/analysisOutput";
+import { formatMyanmarParagraphs } from "../shared/formatMyanmarParagraphs";
 import { parseCaptionFile, isCaptionExtension, isMp3Extension } from "./parsers/caption";
 import { createConfigStore, resolveApiKey } from "./services/configStore";
 import { exportSplitFromTimeline } from "./services/audioSplitter";
@@ -225,9 +226,16 @@ const appRpc = BrowserView.defineRPC<AppRPC>({
         if (!parsed.ok)
           return { ok: false, error: parsed.error, code: "CAPTION_PARSE" };
 
+        // Use shorter paragraph targets for denser readability requirements.
+        const normalizedCaptionText = formatMyanmarParagraphs(parsed.text, {
+          idealCharsPerParagraph: 110,
+          maxCharsPerParagraph: 150,
+          minCharsPerParagraph: 55,
+        });
+
         const result = await analyzeCaptionAndAudio({
           apiKey,
-          captionPlainText: parsed.text,
+          captionPlainText: normalizedCaptionText,
           captionFormatLabel: parsed.sourceFormat,
           mp3Path,
           mp3DisplayName: basename(mp3Path),
