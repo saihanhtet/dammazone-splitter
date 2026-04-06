@@ -3,6 +3,7 @@
 ## Caption parsing
 
 Module: `src/bun/parsers/caption.ts`
+Paragraph formatter: `src/shared/formatMyanmarParagraphs.ts` (applied in analyze flow from `src/bun/index.ts`)
 
 Supported extensions: **`.txt`**, **`.srt`**, **`.vtt`**, **`.json`**.
 
@@ -10,6 +11,21 @@ Supported extensions: **`.txt`**, **`.srt`**, **`.vtt`**, **`.json`**.
 - **JSON**: Heuristic extraction from common keys (`text`, `caption`, `segments[].text`, etc.).
 
 Parse failures surface as `analyze` errors with code **`CAPTION_PARSE`**.
+
+### Myanmar paragraph normalization before Gemini
+
+After caption parsing succeeds, text is auto-formatted into labeled blocks:
+
+- `Paragraph 1`
+- `Paragraph 2`
+- ...
+
+Rules used by the formatter:
+
+- Primary boundary: `။`
+- Secondary boundary when needed: `၊`
+- Runtime readability sizing: `idealCharsPerParagraph=110`, `maxCharsPerParagraph=150`, `minCharsPerParagraph=55`
+- Existing labeled text (`Paragraph 1`, etc.) is treated idempotently to avoid duplicate labels.
 
 ## MP3 split + CSV export
 

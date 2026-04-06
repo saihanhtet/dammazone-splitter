@@ -2,7 +2,7 @@
 
 Desktop app built with **Electrobun**, **React**, **Tailwind**, and **Vite**, based on the upstream [`react-tailwind-vite`](https://github.com/blackboardsh/electrobun/tree/main/templates/react-tailwind-vite) template (using the **npm** `electrobun` package, not the monorepo `file:` dependency).
 
-The app takes **one caption file** (`.txt`, `.srt`, `.vtt`, or `.json`) and **one MP3**, sends them to **Gemini** via `@google/genai` (audio uploaded with the Files API; caption text extracted locally), and returns **strict JSON** validated with **Zod** to match this shape:
+The app takes **one caption file** (`.txt`, `.srt`, `.vtt`, or `.json`) and **one MP3**, auto-formats caption text into labeled Myanmar paragraphs (`Paragraph 1`, `Paragraph 2`, ...) for readability, sends them to **Gemini** via `@google/genai` (audio uploaded with the Files API), and returns **strict JSON** validated with **Zod** to match this shape:
 
 ```json
 [
@@ -101,6 +101,7 @@ The dated folder is opened in the system file manager when export finishes.
 | MP3 split + CSV export | [`src/bun/services/audioSplitter.ts`](src/bun/services/audioSplitter.ts) |
 | Gemini client | [`src/bun/services/geminiClient.ts`](src/bun/services/geminiClient.ts) |
 | Caption parsers | [`src/bun/parsers/caption.ts`](src/bun/parsers/caption.ts) |
+| Myanmar paragraph formatter | [`src/shared/formatMyanmarParagraphs.ts`](src/shared/formatMyanmarParagraphs.ts) |
 | API key persistence | [`src/bun/services/configStore.ts`](src/bun/services/configStore.ts) |
 | Optional history (JSONL) | [`src/bun/services/historyStore.ts`](src/bun/services/historyStore.ts) + `analysis-history.jsonl` under user data |
 | Zod schema | [`src/shared/schema/analysisOutput.ts`](src/shared/schema/analysisOutput.ts) |

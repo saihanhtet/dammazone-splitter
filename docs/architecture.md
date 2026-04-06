@@ -34,10 +34,11 @@ Routing uses **React Router** with a **`HashRouter`** (`#/`, `#/saved`) so navig
 
 1. User selects caption file + MP3 (native picker or DnD → base64 → temp file on main).
 2. Main reads caption bytes, **parses** to plain text (`parseCaptionFile`).
-3. Main **uploads** MP3 via Gemini Files API, waits until file is **ACTIVE**.
-4. Main calls **generateContent** with system instruction, user text (caption + metadata), and audio part; response must be **JSON** matching the model JSON schema.
-5. Main **parses** and **Zod-validates** the array; on success, optional **history** append; UI shows segments.
-6. Optional **export**: main runs **ffmpeg** per segment, writes `mp3/` + `output.csv` under Documents.
+3. Main **auto-formats Myanmar captions** into labeled blocks (`Paragraph 1`, `Paragraph 2`, ...) using `src/shared/formatMyanmarParagraphs.ts` with shorter defaults for readability (`ideal=110`, `max=150`, `min=55` chars).
+4. Main **uploads** MP3 via Gemini Files API, waits until file is **ACTIVE**.
+5. Main calls **generateContent** with system instruction, user text (caption + metadata), and audio part; response must be **JSON** matching the model JSON schema.
+6. Main **parses** and **Zod-validates** the array; on success, optional **history** append; UI shows segments.
+7. Optional **export**: main runs **ffmpeg** per segment, writes `mp3/` + `output.csv` under Documents.
 
 ## Dependencies (runtime)
 

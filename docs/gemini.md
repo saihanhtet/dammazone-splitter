@@ -20,7 +20,12 @@ System prompt: `src/bun/services/geminiPrompts.ts` (`GEMINI_SYSTEM_INSTRUCTION`)
 
 ## Generation
 
-- **User message** includes caption format label, display file name, extracted caption text, and instructions to follow the system prompt.
+- **Caption preprocessing (before Gemini call)**: caption text is normalized into labeled paragraph blocks via `formatMyanmarParagraphs(...)` in `src/shared/formatMyanmarParagraphs.ts`.
+  - Primary split boundary: `။`
+  - Secondary fallback boundary for long units: `၊`
+  - Runtime sizing used in analyze flow: `idealCharsPerParagraph=110`, `maxCharsPerParagraph=150`, `minCharsPerParagraph=55`
+  - If input already contains `Paragraph 1` style labels, formatting is treated as idempotent (no duplicate heading generation).
+- **User message** includes caption format label, display file name, extracted/normalized caption text, and instructions to follow the system prompt.
 - **Parts**: text (user message) + `createPartFromUri(uri, mimeType)` for the uploaded audio.
 - **Config**: `systemInstruction`, `responseMimeType: application/json`, **`responseJsonSchema`** (array of objects with `start`, `end`, `section`, `text`, `pause`), `temperature: 0.2`.
 
