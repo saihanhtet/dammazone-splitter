@@ -1,0 +1,8 @@
+node_modules
+dist
+build
+.electrobun
+*.local
+.env
+.DS_Store
+artifacts
