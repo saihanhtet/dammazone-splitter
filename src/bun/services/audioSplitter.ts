@@ -60,6 +60,42 @@ function resolveUniqueChildDir(parent: string, baseName: string): string {
   return join(parent, `${baseName}_${Date.now()}`);
 }
 
+function resolveFfmpegBinary(): { bin: string | null; checked: string[] } {
+  const checked: string[] = [];
+
+  // Highest priority: explicit override from environment.
+  const explicit = process.env.FFMPEG_PATH?.trim();
+  if (explicit) {
+    checked.push(explicit);
+    if (existsSync(explicit)) return { bin: explicit, checked };
+  }
+
+  // PATH lookup (works in terminal, may fail in packaged GUI apps).
+  const fromPath = Bun.which("ffmpeg");
+  if (fromPath) {
+    checked.push(fromPath);
+    return { bin: fromPath, checked };
+  }
+
+  // Common install locations (especially Homebrew on macOS app launches).
+  const candidates =
+    process.platform === "darwin"
+      ? ["/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg", "/usr/bin/ffmpeg"]
+      : process.platform === "linux"
+        ? ["/usr/bin/ffmpeg", "/usr/local/bin/ffmpeg", "/snap/bin/ffmpeg"]
+        : [
+            "C:\\ffmpeg\\bin\\ffmpeg.exe",
+            "C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe",
+          ];
+
+  for (const candidate of candidates) {
+    checked.push(candidate);
+    if (existsSync(candidate)) return { bin: candidate, checked };
+  }
+
+  return { bin: null, checked };
+}
+
 async function runFfmpeg(
   ffmpegBin: string,
   args: string[],
@@ -157,12 +193,11 @@ export async function exportSplitFromTimeline(options: {
   const { documentsRoot, mp3SourcePath, segments } = options;
   const at = options.at ?? new Date();
 
-  const ffmpegBin = Bun.which("ffmpeg");
+  const { bin: ffmpegBin, checked } = resolveFfmpegBinary();
   if (!ffmpegBin)
     return {
       ok: false,
-      error:
-        "ffmpeg was not found in PATH. Install ffmpeg (e.g. `brew install ffmpeg`) and restart the app.",
+      error: `ffmpeg was not found. In macOS packaged apps, PATH may not include Homebrew. Install with \`brew install ffmpeg\`, then fully quit and reopen the app. You can also set FFMPEG_PATH to the binary. Checked: ${checked.join(", ")}`,
       code: "NO_FFMPEG",
     };
 
